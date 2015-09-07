@@ -11,7 +11,6 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-var qs = require('querystring');
 var data = {results: []};
 var roomlog = {};
 var urlParser = require('url');
@@ -61,26 +60,9 @@ var requestHandler = function(request, response) {
   var parsedUrl = urlParser.parse(request.url);
 
   if (parsedUrl.pathname === '/classes/messages') {
-
-
     if (request.method === 'GET') {
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify(data));  
-      return;
-    }
-    else if (request.method === 'POST') {
-      var body = '';
-      request.on('data', function (data) {
-        body += data;
-      });
-      request.on('end', function () {
-        var message = JSON.parse(body);
-        message.roomname = 'lobby';
-        data.results.push(message);
-        statusCode = 201;
-        response.writeHead(statusCode, headers);
-        return response.end(JSON.stringify(data));  
-      });
+      return response.end(JSON.stringify(data));  
     }
   }  
   else if (parsedUrl.pathname.match(/^\/classes\/(.+)$/)) {
