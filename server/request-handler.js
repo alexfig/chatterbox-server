@@ -11,8 +11,13 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
+var qs = require('querystring');
+var data = {results: []};
+var roomlog = {};
+var urlParser = require('url');
 
 var requestHandler = function(request, response) {
+
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -41,9 +46,77 @@ var requestHandler = function(request, response) {
   // other than plain text, like JSON or HTML.
   headers['Content-Type'] = "text/plain";
 
+  var parsedUrl = urlParser.parse(request.url);
+
+  if (parsedUrl.pathname === '/classes/messages') {
+
+
+    if (request.method === 'GET') {
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify(data));  
+      return;
+    }
+    else if (request.method === 'POST') {
+      var body = '';
+      request.on('data', function (data) {
+        body += data;
+      });
+      request.on('end', function () {
+        var message = JSON.parse(body);
+        message.roomname = 'lobby';
+        data.results.push(message);
+        statusCode = 201;
+        response.writeHead(statusCode, headers);
+        response.end(JSON.stringify(data));  
+        return;
+      });
+    }
+  }  
+  else if (parsedUrl.pathname.match(/^\/classes\/(.+)$/)) {
+    console.log('room found');
+    var room = parsedUrl.pathname.match(/^\/classes\/(.+)$/);
+    if (request.method === 'GET') {
+
+      roomlog[room[1]] = roomlog[room[1]] || []; 
+      response.writeHead(statusCode, headers);
+      response.end(JSON.stringify({results: roomlog[room[1]] }));  
+      return;
+    }
+    else if (request.method === 'POST') {
+      var body = '';
+      request.on('data', function (data) {
+        body += data;
+      });
+      request.on('end', function () {
+        var message = JSON.parse(body);
+        message.roomname = room[1];
+        data.results.push(message);
+        roomlog[room[1]] = roomlog[room[1]] || []; 
+        roomlog[room[1]].push(message);
+        statusCode = 201;
+        response.writeHead(statusCode, headers);
+        response.end(JSON.stringify({results: roomlog[room[1]] }));  
+        return;
+      });
+    }
+    else if (request.method === 'OPTIONS') {
+      response.writeHead(statusCode, headers);
+      response.end();  
+      return;
+    }
+  }
+  else if (parsedUrl.pathname === '/') {
+
+  }
+  else {
+    statusCode = 404;
+
+    response.writeHead(statusCode, headers);
+    response.end();  
+  }
+
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  response.writeHead(statusCode, headers);
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -52,8 +125,9 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
 };
+
+module.exports.requestHandler = requestHandler;
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
