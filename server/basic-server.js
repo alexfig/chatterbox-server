@@ -26,6 +26,8 @@ var server = http.createServer(handleRequest.requestHandler);
 console.log("Listening on http://" + ip + ":" + port);
 server.listen(port, ip);
 
+setInterval(handleRequest.saveLog, 2000);
+
 // To start this server, run:
 //
 //   node basic-server.js

@@ -15,6 +15,18 @@ var qs = require('querystring');
 var data = {results: []};
 var roomlog = {};
 var urlParser = require('url');
+var fs = require('fs');
+var jsonfile = require('jsonfile')
+var util = require('util')
+
+var dataFile = __dirname + '/log/data.json';
+var roomFile = __dirname + '/log/room.json';
+jsonfile.readFile(dataFile, function(err, obj) {
+  data = obj || {results: []};
+});
+jsonfile.readFile(roomFile, function(err, obj) {
+  roomlog = obj || {};
+});
 
 var requestHandler = function(request, response) {
 
@@ -67,8 +79,7 @@ var requestHandler = function(request, response) {
         data.results.push(message);
         statusCode = 201;
         response.writeHead(statusCode, headers);
-        response.end(JSON.stringify(data));  
-        return;
+        return response.end(JSON.stringify(data));  
       });
     }
   }  
@@ -79,8 +90,7 @@ var requestHandler = function(request, response) {
 
       roomlog[room[1]] = roomlog[room[1]] || []; 
       response.writeHead(statusCode, headers);
-      response.end(JSON.stringify({results: roomlog[room[1]] }));  
-      return;
+      return response.end(JSON.stringify({results: roomlog[room[1]] }));  
     }
     else if (request.method === 'POST') {
       var body = '';
@@ -95,24 +105,34 @@ var requestHandler = function(request, response) {
         roomlog[room[1]].push(message);
         statusCode = 201;
         response.writeHead(statusCode, headers);
-        response.end(JSON.stringify({results: roomlog[room[1]] }));  
-        return;
+        return response.end(JSON.stringify({results: roomlog[room[1]] }));  
       });
     }
     else if (request.method === 'OPTIONS') {
       response.writeHead(statusCode, headers);
-      response.end();  
-      return;
+      return response.end();  
     }
   }
-  else if (parsedUrl.pathname === '/') {
-
-  }
   else {
-    statusCode = 404;
+    var path = parsedUrl.pathname;
 
-    response.writeHead(statusCode, headers);
-    response.end();  
+    if (path === '/')
+      path = '/index.html';
+
+
+    fs.readFile(__dirname + '/client' + path, function(err, data) {
+      if (err) {
+        statusCode = 404;
+        response.writeHead(404, headers);
+        return response.end('Error loading ' + path);
+      }
+      else {
+        statusCode = 200;
+        headers['Content-Type'] = "text/html";
+        response.writeHead(statusCode);
+        return response.end(data);
+      }
+    });
   }
 
   // .writeHead() writes to the request line and headers of the response,
@@ -128,6 +148,19 @@ var requestHandler = function(request, response) {
 };
 
 module.exports.requestHandler = requestHandler;
+module.exports.saveLog = function() {
+  var dataFile = __dirname + '/log/data.json';
+  var roomFile = __dirname + '/log/room.json';
+
+  jsonfile.writeFile(dataFile, data, function (err) {
+    if (err)
+      console.error(err);
+  });
+  jsonfile.writeFile(roomFile, roomlog, function (err) {
+    if (err)
+      console.error(err);
+  });
+};
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
 // This code allows this server to talk to websites that
