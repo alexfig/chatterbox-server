@@ -1,19 +1,29 @@
 var CardView = Backbone.View.extend({
-  className: 'card chat-window',
+  tagName: 'main',
 
   initialize: function() {
-    this.user = new UserView(collection: this.collection);
-    this.messages = new MessagesView(collection: this.collection);
-    this.form = new FormView(collection: this.collection);
+    this.user = new UserView({collection: this.collection});
+    this.messages = new MessagesView({collection: this.collection});
+    this.form = new FormView({collection: this.collection});
     this.render();
   },
 
   render: function() {
-    this.$el.append([
-      this.user.$el,
-      this.messages.$el,
-      this.form.$el
-    ]);
+    this.$el.append($('<div>', {
+      class: 'container chat-window'
+    }).append($('<div>', {
+      class: 'card chat-window'
+    }).append([
+            this.user.$el,
+            this.messages.$el,
+            this.form.$el
+    ])));
+    // this.$el.append()
+    // this.$el.append([
+    //   this.user.$el,
+    //   this.messages.$el,
+    //   this.form.$el
+    // ]);
 
     return this;
   }

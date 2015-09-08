@@ -1,7 +1,7 @@
 var UserView = Backbone.View.extend({
   className: 'row user-row',
 
-  template: _.template('
+  template: _.template('\
     <div class="row user-row"> \
       <i class="material-icons prefix col s1 medium account-circle">perm_identity</i> \
       <span class="username col s10"><a class="modal-trigger current-user" href="#modal1"><%- username %></a></span> \
@@ -24,21 +24,19 @@ var UserView = Backbone.View.extend({
         opacity: .5, // Opacity of modal background
         in_duration: 300, // Transition in duration
         out_duration: 200, // Transition out duration
-        ready: function() {
-        }
-        , // Callback for Modal open
-        complete: changeUser // Callback for Modal close
+        ready: function() {}, // Callback for Modal open
+        complete: this.changeUser.bind(this) // Callback for Modal close
       }
     );
   },
 
   render: function() {
-    this.$el.html(this.template({username: this.collection.username}));
+    this.$el.html(this.template({username: this.collection.currentUser}));
   },
 
   changeUser: function() {
-    var username = this.$('.current-user').text();
-    this.collection.username = username;
+    var username = this.$('#user').val();
+    this.collection.currentUser = username;
     this.$('.current-user').text(username);
   }
 });

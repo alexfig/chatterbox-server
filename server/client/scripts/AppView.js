@@ -1,10 +1,14 @@
 var AppView = Backbone.View.extend({
-  el: 'body',
-
-  initialize: function() {
-    this.rooms = new RoomView(collection: this.model.get('rooms'));
-    this.card = new CardView(collection: this.model.get('messages'));
+  initialize: function(params) {
+    this.messages = params.messages;
+    this.rooms = new RoomsView({collection: params.rooms});
+    this.card = new CardView({collection: params.messages});
+    this.listenTo(params.rooms, 'updateRoom', this.changeRoom);
     this.render();
+  },
+
+  changeRoom: function(roomname) {
+   this.messages.changeRoom(roomname);
   },
 
   render: function() {
@@ -14,5 +18,6 @@ var AppView = Backbone.View.extend({
     ]);
 
     return this;
-  }
+  },
+
 });

@@ -1,14 +1,15 @@
 var Messages = Backbone.Collection.extend({
   model: Message,
 
-  url: 'localhost:3000',
+  url: 'http://localhost:3000/classes/lobby',
 
   initialize: function() {
-    this.username = 'Garrett';
-  }
+    this.currentUser = 'Garrett';
+    this.currentRoom = 'lobby';
+    this.loadMessages();
+  },
 
   loadMessages: function() {
-
     this.fetch();
   },
 
@@ -17,7 +18,14 @@ var Messages = Backbone.Collection.extend({
   },
 
   changeUser: function(username) {
-    this.username = username;
+    this.currentUser = username;
+  },
+
+  changeRoom: function(roomname) {
+    this.url = 'http://localhost:3000/classes/' + roomname;
+    this.currentRoom = roomname;
+    this.reset();
+    this.loadMessages();
   }
 
 });

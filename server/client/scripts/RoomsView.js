@@ -3,30 +3,20 @@ var RoomsView = Backbone.View.extend({
 
   className: 'side-nav fixed room-list',
 
-  template: _.template('
+  template: _.template('\
     <li class="room-logo"><a class="">Rooms</a></li> \
     <div class="create-room"> \
       <a class="waves-effect waves-teal btn modal-trigger create-room" href="#modal2">Create Room</a> \
     </div> \
-    <div id="modal2" class="modal room-modal"> \
-      <div class="modal-content"> \
-        <h4>Room Name</h4> \
-        <input id="room-name" class="" type="text" placeholder="Room name" > \
-      </div> \
-      <div class="modal-footer"> \
-        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Create</a> \
-      </div> \
-    </div>'
+    '
   ),
 
-  events: {
-    'click .create-room'
-  }
-
   initialize: function() {
-    this.render();
-
-    this.$('.modal-trigger.current-user').leanModal({
+    var self = this;
+    this.roomList = {};
+    this.listenTo(this.collection, 'add', function(){self.render();console.log('addcallback');});
+    this.$el.html(this.template());
+    this.$('.modal-trigger.create-room').leanModal({
         dismissible: true, // Modal can be dismissed by clicking outside of the modal
         opacity: .5, // Opacity of modal background
         in_duration: 300, // Transition in duration
@@ -34,14 +24,30 @@ var RoomsView = Backbone.View.extend({
         ready: function() {
         }
         , // Callback for Modal open
-        complete: changeUser // Callback for Modal close
+        complete: function() {
+          console.log('complete');
+          self.collection.trigger('createRoom', $('#room-name').val());
+        } // Callback for Modal close
       }
     );
+    this.render();
+
+
 
   },
 
   render: function() {
-    this.$el.children.detach();
-  }
+    var self = this;
+    //this.$el.children().detach();
+    $('#room-name').val('');
+    self.collection.map(function(room) {
+      if(!(room.get('roomname') in self.roomList)) {
+        self.roomList[room.get('roomname')] = true;
+        self.$el.append(new RoomView({model: room}).render());
+      }
+    });
+
+    return self.$el;
+  },
 
 });

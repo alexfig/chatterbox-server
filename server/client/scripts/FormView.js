@@ -10,11 +10,22 @@ var FormView = Backbone.View.extend({
   },
 
   handleSubmit: function() {
+    var self = this;
     var messageObj = {};
     messageObj.text = $("#message").val();
-    messageObj.username = currentUser;
-    messageObj.roomname = currentRoom;
-    var url = 'http://127.0.0.1:3000/classes/' + currentRoom
+    messageObj.username = this.collection.currentUser;
+    messageObj.roomname = this.collection.currentRoom;
+    // var url = 'http://127.0.0.1:3000/classes/' + this.collection.currentRoom
+    // $.ajax({
+    //   type: "POST",
+    //   url: url,
+    //   data: messageObj,
+    //   success: function() {
+    //     console.log('message sent');
+    //     self.$('#message').val('');
+    //   },
+    // });
+
     this.collection.create(messageObj);
     this.$('#message').val('');
   },
