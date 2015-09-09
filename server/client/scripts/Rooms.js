@@ -10,15 +10,12 @@ var Rooms = Backbone.Collection.extend({
   },
 
   createRoom: function(roomname) {
-    console.log(this);
-    console.log(roomname);
-    debugger;
+    roomname = (roomname === '') ? 'lobby' : roomname;
     this.add({roomname: roomname});
     this.changeRoom(roomname);
   },
 
   changeRoom: function(roomname) {
-    console.log('changing room in collection');
     this.currentRoom = roomname;
     this.trigger('updateRoom', this.currentRoom);
   }

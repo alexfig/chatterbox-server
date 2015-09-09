@@ -18,12 +18,6 @@ var CardView = Backbone.View.extend({
             this.messages.$el,
             this.form.$el
     ])));
-    // this.$el.append()
-    // this.$el.append([
-    //   this.user.$el,
-    //   this.messages.$el,
-    //   this.form.$el
-    // ]);
 
     return this;
   }

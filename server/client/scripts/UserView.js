@@ -18,14 +18,18 @@ var UserView = Backbone.View.extend({
   ),
 
   initialize: function() {
-    this.render();
-    this.$('.modal-trigger.current-user').leanModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-        ready: function() {}, // Callback for Modal open
-        complete: this.changeUser.bind(this) // Callback for Modal close
+    var self = this;
+    self.render();
+    self.setCurrentUserHandler();
+  },
+
+  setCurrentUserHandler: function() {
+    var self = this;
+    self.$('.modal-trigger.current-user').leanModal({
+        opacity: .5, 
+        in_duration: 300, 
+        out_duration: 200, 
+        complete: self.changeUser.bind(self) 
       }
     );
   },

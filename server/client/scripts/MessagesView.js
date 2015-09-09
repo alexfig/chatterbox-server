@@ -2,14 +2,14 @@ var MessagesView = Backbone.View.extend({
   className: 'row chat-row',
 
   initialize: function() {
-    this.listenTo(this.collection, 'add', this.render);
-    this.listenTo(this.collection, 'reset', this.clearMessages);
-    this.messages = {};
-    this.render();
     var self = this;
-    setTimeout(function() {
-      self.$el[0].scrollTop = self.$el[0].scrollHeight;
-    }, 200);
+    self.listenTo(self.collection, 'add', self.render);
+    self.listenTo(self.collection, 'reset', self.clearMessages);
+    self.messages = {};
+    self.render();
+
+    // scroll to bottom after 200ms to fix scroll not reaching bottom on init
+    setTimeout(self.scrollToBottom.bind(self), 200);
   },
 
   render: function() {
@@ -21,7 +21,8 @@ var MessagesView = Backbone.View.extend({
         self.$el.append(new MessageView({model: message}).render());
       }
     });
-    this.$el[0].scrollTop = this.$el[0].scrollHeight;
+
+    self.scrollToBottom();
 
     return self;
   },
@@ -30,5 +31,9 @@ var MessagesView = Backbone.View.extend({
     this.messages = {};
     this.$el.empty();
   },
+
+  scrollToBottom: function() {
+    this.$el[0].scrollTop = this.$el[0].scrollHeight;
+  }
 
 });

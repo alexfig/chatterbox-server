@@ -4,12 +4,14 @@ var Messages = Backbone.Collection.extend({
   url: 'http://localhost:3000/classes/lobby',
 
   initialize: function() {
+    var self = this;
     this.currentUser = 'Garrett';
     this.currentRoom = 'lobby';
-    this.loadMessages();
+    this.initializeRooms();
   },
 
   loadMessages: function() {
+    var self = this;
     this.fetch();
   },
 
@@ -26,6 +28,22 @@ var Messages = Backbone.Collection.extend({
     this.currentRoom = roomname;
     this.reset();
     this.loadMessages();
+  },
+
+  getRooms: function() {
+    var roomList = {};
+    var uniqueRooms = _.uniq(this.map(function(message) {
+      return message.get('roomname');
+    }));
+    this.trigger('initializeRooms', uniqueRooms);
+    this.url = 'http://localhost:3000/classes/lobby';
+    this.loadMessages();
+  },
+
+  initializeRooms: function() {
+    var self = this;
+    self.url = 'http://localhost:3000/classes/messages';
+    self.fetch({success: self.getRooms.bind(self)});
   }
 
 });

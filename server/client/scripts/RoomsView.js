@@ -13,32 +13,33 @@ var RoomsView = Backbone.View.extend({
 
   initialize: function() {
     var self = this;
-    this.roomList = {};
-    this.listenTo(this.collection, 'add', function(){self.render();console.log('addcallback');});
-    this.$el.html(this.template());
-    this.$('.modal-trigger.create-room').leanModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .5, // Opacity of modal background
-        in_duration: 300, // Transition in duration
-        out_duration: 200, // Transition out duration
-        ready: function() {
-        }
-        , // Callback for Modal open
-        complete: function() {
-          console.log('complete');
-          self.collection.trigger('createRoom', $('#room-name').val());
-        } // Callback for Modal close
+    self.roomList = {};
+    self.listenTo(self.collection, 'add', self.render);
+    self.$el.html(self.template());
+
+    self.createRoomHandler();
+    self.render();
+  },
+
+  createRoomHandler: function() {
+    var self = this;
+    self.$('.modal-trigger.create-room').leanModal({
+        opacity: .5, 
+        in_duration: 300, 
+        out_duration: 200, 
+        complete: self.createRoom.bind(self)
       }
     );
-    this.render();
+  },
 
-
-
+  createRoom: function() {
+    var self = this;
+    self.collection.trigger('createRoom', $('#room-name').val());
   },
 
   render: function() {
     var self = this;
-    //this.$el.children().detach();
+    
     $('#room-name').val('');
     self.collection.map(function(room) {
       if(!(room.get('roomname') in self.roomList)) {

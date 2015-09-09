@@ -10,21 +10,44 @@ app.use(function(req, res, next) {
 app.use(express.static('client'));
 app.use(bodyParser.json()); // for parsing application/json
 
-
 var jsonfile = require('jsonfile')
 var util = require('util')
+
+/*==================================
+=            READ FILES            =
+==================================*/
 
 var data, roomlog;
 var dataFile = __dirname + '/log/data.json';
 var roomFile = __dirname + '/log/room.json';
 jsonfile.readFile(dataFile, function(err, obj) {
+  if (err)
+    console.log(err);
   data = obj || {results: []};
 });
 jsonfile.readFile(roomFile, function(err, obj) {
+  if (err)
+    console.log(err);
   roomlog = obj || {};
 });
 
 
+/*=====  End of READ FILES  ======*/
+
+
+var data, roomlog;
+var dataFile = __dirname + '/log/data.json';
+var roomFile = __dirname + '/log/room.json';
+jsonfile.readFile(dataFile, function(err, obj) {
+  if (err)
+    console.log(err);
+  data = obj || {results: []};
+});
+jsonfile.readFile(roomFile, function(err, obj) {
+  if (err)
+    console.log(err);
+  roomlog = obj || {};
+});
 
 var defaultCorsHeaders = {
   "access-control-allow-credentials": true,
@@ -33,7 +56,6 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version',
   "access-control-max-age": 10
 };
-
 
 app.get('/classes/messages', function(req, res) {
   res.status(200).send(JSON.stringify(data));
@@ -58,6 +80,8 @@ app.post('/classes/:room', function (req, res) {
 app.get('/classes/:room', function (req, res) {
   res.status(200).send(JSON.stringify({results: roomlog[req.roomname]}));
 });
+
+
 
 setInterval(saveLog, 2000);
 

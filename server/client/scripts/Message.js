@@ -6,7 +6,12 @@ var Message = Backbone.Model.extend({
   },
 
   initialize: function() {
-    this.set('image', this.hashCode(this.get('username'), 39)+ '.jpg');
+    this.set('image', this.getUniqueImage());
+  },
+
+  // generate random unique image for each user
+  getUniqueImage: function() {
+    return this.hashCode(this.get('username'), 39)+ '.jpg';
   },
 
   hashCode: function(str, max) {
