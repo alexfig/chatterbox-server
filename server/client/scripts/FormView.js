@@ -6,7 +6,8 @@ var FormView = Backbone.View.extend({
   },
 
   events: {
-    'click #sendButton': 'handleSubmit' 
+    'click #sendButton': 'handleSubmit',
+    'keypress #message': 'checkEnter'
   },
 
   handleSubmit: function() {
@@ -18,6 +19,11 @@ var FormView = Backbone.View.extend({
 
     this.collection.create(messageObj);
     this.$('#message').val('');
+  },
+
+  checkEnter: function(e) {
+    if (e.which === 13)
+      this.handleSubmit();
   },
 
   render: function() {
