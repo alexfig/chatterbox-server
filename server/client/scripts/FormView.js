@@ -11,7 +11,6 @@ var FormView = Backbone.View.extend({
   },
 
   handleSubmit: function() {
-    var self = this;
     var messageObj = {};
     messageObj.text = $("#message").val();
     messageObj.username = this.collection.currentUser;

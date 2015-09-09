@@ -37,7 +37,7 @@ var Messages = Backbone.Collection.extend({
     }));
     this.trigger('initializeRooms', uniqueRooms);
     this.url = 'http://localhost:3000/classes/lobby';
-    this.loadMessages();
+    this.changeRoom('lobby');
   },
 
   initializeRooms: function() {
